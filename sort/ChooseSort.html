@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>选择排序</title>
+	<style>
+		html, body {
+			height: 100%;
+			overflow: hidden;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+<canvas id="app">
+</canvas>
+<script src="./util.js"></script>
+<script>
+  window.onload = function () {
+    const canvas = document.getElementById("app");
+    canvas.width = document.documentElement.clientWidth;
+    canvas.height = document.documentElement.clientHeight;
+    const ctx = canvas.getContext("2d");
+
+    /**
+		 * 排序方法双指针遍历
+     * @param array
+     * @param delay
+     */
+    function sort(array, delay) {
+      draw(array, -1, -1, -1);
+      let i = 0, j=i, len = array.length, min=i;
+      const timer = setInterval(() => {
+        if (i === len) { // 最外层循环
+          clearInterval(timer);
+          success(array);
+          return;
+        }
+        if(j===len){ // 内层循环
+          i++;
+          j=i;
+          swap(array, min, i-1);
+          min = i;
+        }
+        if (compare(array, j, min)) min = j;
+        j++;
+        draw(array, min, j,i);
+      },  delay);
+    }
+
+    /**
+		 * 排序成功的回调
+     * @param array
+     */
+    function success(array) {
+      console.log(isSort(array));
+      print(array);
+      draw(array, -1, -1, array.length);
+    }
+
+    /**
+		 * 绘图
+     * @param array
+     * @param minIndex
+     * @param curIndex
+     * @param isSort
+     */
+    function draw(array, minIndex, curIndex, orderIndex) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let width = canvas.width / array.length;
+      let canvasHeight = canvas.height;
+      for (let i = 0; i < array.length; i++) {
+        if (i<orderIndex) {
+          ctx.fillStyle = 'green';
+        }else{
+          if (i === minIndex) {
+            ctx.fillStyle = 'red'
+          }else if(i===curIndex){
+            ctx.fillStyle = 'yellow'
+					}else {
+            ctx.fillStyle = 'rgb(147,224,255)'
+          }
+				}
+        drawRect(ctx, width * i - 2, canvasHeight - array[i], width - 2, array[i],isSort);
+      }
+      ctx.fill();
+    }
+
+    /**
+		 * 执行函数主方法
+     */
+    function main() {
+      let num = 20;
+      let max = canvas.height;
+      let delay = 500;
+      let arr = crateArray(num, max);
+      sort(arr, delay);
+      window.onresize = function () {
+        canvas.width = document.documentElement.clientWidth;
+        canvas.height = document.documentElement.clientHeight;
+        draw(arr,-1,-1,isSort(arr));
+      };
+    }
+    main();
+  }
+</script>
+</body>
+</html>

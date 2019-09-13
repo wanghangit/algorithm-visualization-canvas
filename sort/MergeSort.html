@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>归并排序</title>
+	<style>
+		html, body {
+			height: 100%;
+			overflow: hidden;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+<canvas id="app">
+</canvas>
+<script src="./util.js"></script>
+<script>
+  window.onload = function () {
+    const canvas = document.getElementById("app");
+    canvas.width = document.documentElement.clientWidth;
+    canvas.height = document.documentElement.clientHeight;
+    const ctx = canvas.getContext("2d");
+    let delay = 50;
+    let step = delay;
+
+    /**
+     * 排序方法
+     * @param array
+     */
+    function sort(array) {
+      draw(copyArray(array), -1, -1, -1);
+      mergeSort(array, 0, array.length - 1);
+      success(array);
+      draw(copyArray(array), 0, array.length - 1, -1);
+    }
+
+    function mergeSort(array, l, r) {
+      if (l >= r) {
+        return;
+      }
+      let m = l + Math.floor((r - l) / 2);
+      mergeSort(array, l, m);
+      mergeSort(array, m + 1, r);
+      merge(array, l, r);
+    }
+
+    function merge(array, l, r) {
+      let m = l + Math.floor((r - l) / 2), i = l, j = m + 1, k = l;
+      let arr = [];
+      for (let i = l; i <= r; i++) {
+        arr[i] = array[i];
+      }
+      while (k <= r) {
+        if (i > m) {
+          array[k] = arr[j++];
+        } else if (j > r) {
+          array[k] = arr[i++];
+        } else if (compare(arr, i, j)) {
+          array[k] = arr[i++];
+        } else {
+          array[k] = arr[j++];
+        }
+        draw(copyArray(array), l, r, k);
+        k++;
+      }
+    }
+
+    /**
+     * 排序成功的回调
+     * @param array
+     */
+    function success(array) {
+      console.log(isSort(array));
+      print(array);
+    }
+
+    /**
+     * 绘图
+     * @param array
+     * @param left
+     * @param right
+     * @param mergeIndex
+     */
+    function draw(array, left, right, mergeIndex) {
+      console.log(delay);
+      setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let width = canvas.width / array.length;
+        let canvasHeight = canvas.height;
+        for (let i = 0; i < array.length; i++) {
+          if (i < left || i > right) {
+            ctx.fillStyle = 'red'
+          } else {
+            ctx.fillStyle = 'rgb(147,224,255)'
+          }
+          if (i === mergeIndex) {
+            ctx.fillStyle = 'green'
+          }
+          drawRect(ctx, width * i - 2, canvasHeight - array[i], width - 2, array[i], isSort);
+        }
+        ctx.fill();
+      }, delay);
+      delay += step;
+    }
+
+    /**
+     * 执行函数主方法
+     */
+    function main() {
+      let num = 100;
+      let max = canvas.height;
+      let arr = crateArray(num, max);
+      sort(arr, delay);
+      window.onresize = function () {
+        canvas.width = document.documentElement.clientWidth;
+        canvas.height = document.documentElement.clientHeight;
+        draw(arr, -1, -1);
+      };
+    }
+
+    main();
+  }
+</script>
+</body>
+</html>
