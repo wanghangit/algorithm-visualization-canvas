@@ -56,6 +56,14 @@ function drawRect(context, x, y, width, height) {
   context.fillRect(x, y, width, height);
 }
 
+function drawSwap(context, index1, index2, array, canvasHeight, canvasWidth) {
+  let width = canvasWidth/array.length;
+  let step = 5;
+  let x =
+  context.clearRect(width * index1- 2,canvasHeight - array[index1], width - 2, array[index1]);
+  requestAnimationFrame(drawSwap(context, index1, index2, array, canvasHeight, canvasWidth))
+}
+
 function copyArray(array) {
   return [].concat(array);
 }

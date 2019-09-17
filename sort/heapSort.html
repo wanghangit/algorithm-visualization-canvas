@@ -2,9 +2,138 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Title</title>
+	<title>堆排序</title>
+	<style>
+		html, body {
+			height: 100%;
+			overflow: hidden;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
 </head>
 <body>
+<canvas id="app">
+</canvas>
+<script src="./util.js"></script>
+<script>
+  window.onload = function () {
+    const canvas = document.getElementById("app");
+    canvas.width = document.documentElement.clientWidth;
+    canvas.height = document.documentElement.clientHeight;
+    const ctx = canvas.getContext("2d");
+    let delay = 30;
+    let step = delay;
 
+    /**
+     * 排序方法双指针遍历
+     * @param array
+     */
+    function sort(array) {
+      draw(copyArray(array), -1, -1, -1);
+      let size = array.length;
+      buildHeap(array);
+      while (size > 1) {
+        swap(array, 0, size - 1);
+        draw(copyArray(array), -1, -1, size-1);
+        size--;
+        heapSort(array, 0, size);
+
+      }
+      success(array)
+    }
+    /*
+    * 在当前位置维持最大堆的特性
+    */
+    function heapSort(array, index, size) {
+      let left = 2 * index + 1,
+        	right = 2 * index + 2;
+      while (left<size){
+        // 比较父节点和2个子节点取出最大值
+        let large;
+        if(right<size&&compare(array, left, right)){
+          large = right;
+				}else{
+          large = left;
+				}
+        if (compare(array, large, index)){
+          large = index;
+				}
+        if(large===index) break;
+        swap(array, large, index);
+        draw(copyArray(array), large, index, size-1);
+        index = large;
+        left = 2*index+1;
+        right = 2*index+2;
+			}
+    }
+
+    function buildHeap(array) {
+			for (let i = Math.floor((array.length-1)/2); i>=0; i--){
+			  heapSort(array, i, array.length)
+			}
+    }
+
+    /**
+     * 排序成功的回调
+     * @param array
+     */
+    function success(array) {
+      console.log(isSort(array));
+      print(array);
+      draw(array, -1, -1, 0);
+    }
+
+    /**
+     * 绘图
+     * @param array
+     * @param maxIndex
+     * @param curIndex
+     * @param orderIndex
+     */
+    function draw(array, maxIndex, curIndex, orderIndex) {
+      setTimeout(() => {
+        console.log(maxIndex, curIndex, orderIndex);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let width = canvas.width / array.length;
+        let canvasHeight = canvas.height;
+        for (let i = 0; i < array.length; i++) {
+          if (i === maxIndex) {
+            ctx.fillStyle = 'red'
+          } else if (i === curIndex) {
+            ctx.fillStyle = 'yellow'
+          }else {
+            ctx.fillStyle = 'rgb(147,224,255)'
+					}
+          if (i >= orderIndex) {
+            ctx.fillStyle = 'green'
+          }
+          drawRect(ctx, width * i - 2, canvasHeight - array[i], width - 2, array[i]);
+        }
+        ctx.fill();
+			}, delay);
+      delay += step;
+    }
+
+    /**
+     * 执行函数主方法
+     */
+    function main() {
+      let num = 50;
+      let max = canvas.height;
+      let arr = crateArray(num, max);
+      sort(arr);
+      // window.onresize = function () {
+      //   canvas.width = document.documentElement.clientWidth;
+      //   canvas.height = document.documentElement.clientHeight;
+      //   draw(arr, -1, -1);
+      // };
+    }
+    main();
+  }
+</script>
 </body>
 </html>
